@@ -8,6 +8,8 @@ import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import runTests, {browserTests} from 'app/utils/BrowserTests'
 import {validate_account_name, validate_memo_field} from 'app/utils/ChainValidation';
 import {countDecimals} from 'app/utils/ParsersAndFormatters'
+import TextInput from 'react-autocomplete-input';
+import uniq from 'uniq';
 import tt from 'counterpart';
 import { APP_NAME, LIQUID_TOKEN, VESTING_TOKEN } from 'app/client_config';
 
@@ -24,7 +26,7 @@ class TransferForm extends Component {
     constructor(props) {
         super();
         const {transferToSelf} = props;
-        this.state = {advanced: !transferToSelf};
+        this.state = {advanced: !transferToSelf, transferTo: false};
         this.initForm(props)
     }
 
@@ -114,9 +116,9 @@ class TransferForm extends Component {
         this.state.amount.props.onChange(this.balanceValue().split(' ')[0])
     };
 
-    onChangeTo = (e) => {
-        const {value} = e.target;
+    onChangeTo = (value) => {
         this.state.to.props.onChange(value.toLowerCase().trim())
+        this.setState({transferTo: value.toLowerCase().trim()});
     };
 
     render() {
@@ -128,11 +130,25 @@ class TransferForm extends Component {
         const powerTip3 = tt('tips_js.converted_VESTING_TOKEN_can_be_sent_to_yourself_but_can_not_transfer_again', {LIQUID_TOKEN, VESTING_TOKEN})
         const {to, amount, asset, memo} = this.state;
         const {loading, trxError, advanced} = this.state;
-        const {currentUser, toVesting, transferToSelf, dispatchSubmit} = this.props;
+        const {currentUser, currentAccount, toVesting, transferToSelf, dispatchSubmit} = this.props;
         const {transferType} = this.props.initialValues;
         const {submitting, valid, handleSubmit} = this.state.transfer;
         // const isMemoPrivate = memo && /^#/.test(memo.value); -- private memos are not supported yet
         const isMemoPrivate = false;
+
+        // Get names for the recent account transfers
+        var transferToLog = [];
+        currentAccount.get('transfer_history')
+            .map(item => {
+                const data = item.getIn([1, 'op', 1]);
+                const type = item.getIn([1, 'op', 0]);
+
+                // We only care about transfer
+                if (type === "transfer") {
+                    transferToLog.push(data.toJS().to);
+                }
+            });
+
         const form = (
             <form onSubmit={handleSubmit(({data}) => {
                 this.setState({loading: true});
@@ -176,19 +192,25 @@ class TransferForm extends Component {
                     <div className="column small-10">
                         <div className="input-group" style={{marginBottom: "1.25rem"}}>
                             <span className="input-group-label">@</span>
-                            <input
-                                className="input-group-field"
-                                ref="to"
-                                type="text"
-                                placeholder={tt('transfer_jsx.send_to_account')}
-                                onChange={this.onChangeTo}
-                                autoComplete="off"
-                                autoCorrect="off"
-                                autoCapitalize="off"
-                                spellCheck="false"
-                                disabled={loading}
-                                {...to.props}
-                            />
+                            <span style={{width: '100%'}}>
+                                <TextInput
+                                    options={uniq(transferToLog)}
+                                    className="input-group-field"
+                                    ref="to"
+                                    type="text"
+                                    trigger=""
+                                    placeholder={tt('transfer_jsx.send_to_account')}
+                                    onChange={this.onChangeTo}
+                                    autoComplete="off"
+                                    autoCorrect="off"
+                                    autoCapitalize="off"
+                                    spellCheck="false"
+                                    disabled={loading}
+                                    Component="input"
+                                    maxOptions={10}
+                                    value={this.state.transferTo || ""}
+                                />
+                            </span>
                         </div>
                         {to.touched && to.blur && to.error ?
                             <div className="error">{to.error}&nbsp;</div> :
