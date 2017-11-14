@@ -97,7 +97,6 @@
     "react-ab-test": "^1.7.0",
     "react-addons-pure-render-mixin": "15.4.2",
     "react-autocomplete": "^1.7.2",
-    "react-autocomplete-input": "^1.0.5",
     "react-copy-to-clipboard": "^4.2.3",
     "react-dom": "15.4.2",
     "react-dropzone": "^3.7.3",

@@ -1,14 +1,14 @@
 import React, { PropTypes, Component } from 'react';
 import ReactDOM from 'react-dom';
 import reactForm from 'app/utils/ReactForm';
-import {Map} from 'immutable';
+import { Map, Set } from 'immutable';
 import transaction from 'app/redux/Transaction';
 import user from 'app/redux/User';
 import LoadingIndicator from 'app/components/elements/LoadingIndicator';
 import runTests, {browserTests} from 'app/utils/BrowserTests'
 import {validate_account_name, validate_memo_field} from 'app/utils/ChainValidation';
 import {countDecimals} from 'app/utils/ParsersAndFormatters'
-import TextInput from 'react-autocomplete-input';
+import Autocomplete from 'react-autocomplete';
 import tt from 'counterpart';
 import { APP_NAME, LIQUID_TOKEN, VESTING_TOKEN } from 'app/client_config';
 
@@ -20,6 +20,7 @@ class TransferForm extends Component {
         currentUser: PropTypes.object.isRequired,
         toVesting: PropTypes.bool.isRequired,
         currentAccount: PropTypes.object.isRequired,
+        following: PropTypes.object.isRequired,
     };
 
     constructor(props) {
@@ -33,7 +34,7 @@ class TransferForm extends Component {
         setTimeout(() => {
             const {advanced} = this.state;
             if (advanced)
-                ReactDOM.findDOMNode(this.refs.to).focus();
+                this.to.focus()
             else
                 ReactDOM.findDOMNode(this.refs.amount).focus()
         }, 300);
@@ -117,7 +118,7 @@ class TransferForm extends Component {
 
     onChangeTo = (value) => {
         this.state.to.props.onChange(value.toLowerCase().trim())
-        this.setState({transferTo: value.toLowerCase().trim()});
+        this.setState({ to: { ...this.state.to, value: value.toLowerCase().trim() } });
     };
 
     render() {
@@ -136,17 +137,28 @@ class TransferForm extends Component {
         const isMemoPrivate = false;
 
         // Get names for the recent account transfers
-        var transferToLog = [];
-        currentAccount.get('transfer_history')
-            .map(item => {
-                const data = item.getIn([1, 'op', 1]);
-                const type = item.getIn([1, 'op', 0]);
+        const labelPreviousTransfers = tt('transfer_jsx.autocomplete_previous_transfers');
+        const labelFollowingUser = tt('transfer_jsx.autocomplete_user_following');
 
-                // We only care about transfer
-                if (type === "transfer") {
-                    transferToLog.push(data.toJS().to);
-                }
-            }).filter(function(e,i,arr) {return arr.lastIndexOf(e) === i});
+        const transferToLog = currentAccount.get('transfer_history').reduce((acc, cur) => {
+            if (cur.getIn([1, 'op', 0]) === 'transfer') {
+                const username = cur.getIn([1, 'op', 1, 'to']);
+                const numTransfers = acc.get(username) ? acc.get(username).numTransfers + 1 : 1
+                return acc.set(username, {
+                    username,
+                    label: `${numTransfers} ${labelPreviousTransfers}`,
+                    numTransfers,
+                });
+            }
+            return acc;
+        }, Map());
+
+        // Build a combined list of users you follow & have previously transferred to,
+        // and sort it by the number of previous transfers.
+        const autocompleteUsers = this.props.following.toMap()
+          .map((username) => ({username, label: labelFollowingUser }))
+          .merge(transferToLog)
+          .sortBy(u => u.numTransfers).reverse().toArray();
 
         const form = (
             <form onSubmit={handleSubmit(({data}) => {
@@ -191,25 +203,32 @@ class TransferForm extends Component {
                     <div className="column small-10">
                         <div className="input-group" style={{marginBottom: "1.25rem"}}>
                             <span className="input-group-label">@</span>
-                            <span style={{width: '100%'}}>
-                                <TextInput
-                                    options={transferToLog}
-                                    className="input-group-field"
-                                    ref="to"
-                                    type="text"
-                                    trigger=""
-                                    placeholder={tt('transfer_jsx.send_to_account')}
-                                    onChange={this.onChangeTo}
-                                    autoComplete="off"
-                                    autoCorrect="off"
-                                    autoCapitalize="off"
-                                    spellCheck="false"
-                                    disabled={loading}
-                                    Component="input"
-                                    maxOptions={10}
-                                    value={this.state.transferTo || ""}
-                                />
-                            </span>
+                            <Autocomplete
+                                wrapperStyle={{
+                                    display: 'inline-block',
+                                    width: '100%',
+                                }}
+                                inputProps={{
+                                    type: 'text',
+                                    className: 'input-group-field',
+                                    autoComplete: 'off',
+                                    autoCorrect: 'off',
+                                    autoCapitalize: 'off',
+                                    spellCheck: 'false',
+                                    disabled: loading,
+                                }}
+                                ref={el => this.to = el}
+                                getItemValue={item => item.username}
+                                items={autocompleteUsers.filter(item => item.username.indexOf(this.state.to.value) > -1)}
+                                renderItem={(item, isHighlighted) =>
+                                    <div style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+                                    {`${item.username} (${item.label})`}
+                                    </div>
+                                }
+                                value={this.state.to.value || ""}
+                                onChange={(e) => this.setState({ to: { ...this.state.to, value: e.target.value } })}
+                                onSelect={(val) => this.setState({ to: { ...this.state.to, value: val } })}
+                            />
                         </div>
                         {to.touched && to.blur && to.error ?
                             <div className="error">{to.error}&nbsp;</div> :
@@ -299,7 +318,15 @@ export default connect(
         if(initialValues.to !== currentUser.get('username'))
             transferToSelf = false // don't hide the to field
 
-        return {...ownProps, currentUser, currentAccount, toVesting, transferToSelf, initialValues}
+        return {
+            ...ownProps,
+            currentUser,
+            currentAccount,
+            toVesting,
+            transferToSelf,
+            following: state.global.getIn(['follow', 'getFollowingAsync', currentUser.get('username'), 'blog_result']),
+            initialValues,
+        }
     },
 
     // mapDispatchToProps
