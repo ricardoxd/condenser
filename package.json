@@ -140,7 +140,6 @@
     "twilio": "^2.11.1",
     "uncontrollable": "^3.2.1",
     "underscore.string": "^3.2.3",
-    "uniq": "^1.0.1",
     "url-loader": "^0.5.9",
     "web-push": "^3.2.1",
     "webpack": "^3.5.5",

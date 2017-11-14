@@ -9,7 +9,6 @@ import runTests, {browserTests} from 'app/utils/BrowserTests'
 import {validate_account_name, validate_memo_field} from 'app/utils/ChainValidation';
 import {countDecimals} from 'app/utils/ParsersAndFormatters'
 import TextInput from 'react-autocomplete-input';
-import uniq from 'uniq';
 import tt from 'counterpart';
 import { APP_NAME, LIQUID_TOKEN, VESTING_TOKEN } from 'app/client_config';
 
@@ -147,7 +146,7 @@ class TransferForm extends Component {
                 if (type === "transfer") {
                     transferToLog.push(data.toJS().to);
                 }
-            });
+            }).filter(function(e,i,arr) {return arr.lastIndexOf(e) === i});
 
         const form = (
             <form onSubmit={handleSubmit(({data}) => {
@@ -194,7 +193,7 @@ class TransferForm extends Component {
                             <span className="input-group-label">@</span>
                             <span style={{width: '100%'}}>
                                 <TextInput
-                                    options={uniq(transferToLog)}
+                                    options={transferToLog}
                                     className="input-group-field"
                                     ref="to"
                                     type="text"
