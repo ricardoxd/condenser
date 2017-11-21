@@ -25,12 +25,12 @@ const scss_loaders = [
         loader: 'sass-loader',
         options: {
             sourceMap: true,
-            data: '@import "_variables";',
+            data: '@import "app";',
             includePaths: [
                 path.join(__dirname, '../src/app/assets/stylesheets'),
             ]
         }
-    }
+    },
 ];
 
 

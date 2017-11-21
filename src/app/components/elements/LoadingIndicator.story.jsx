@@ -3,7 +3,7 @@ import { storiesOf } from '@storybook/react';
 import LoadingIndicator from './LoadingIndicator';
 import styles from './LoadingIndicator.scss';
 
-storiesOf('Condenser', module)
+storiesOf('Elements', module)
     .add('LoadingIndicator', () => (
         <LoadingIndicator />
     ));
