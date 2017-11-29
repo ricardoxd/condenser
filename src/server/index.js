@@ -43,7 +43,10 @@ global.webpackIsomorphicTools = new WebpackIsomorphicTools(
 );
 
 global.webpackIsomorphicTools.server(ROOT, () => {
-        steem.api.setOptions({ url: config.steemd_connection_server });
+        steem.api.setOptions({
+            url: config.steemd_connection_client,
+            useAppbaseApi: true,
+        });
         steem.config.set('address_prefix', config.get('address_prefix'));
         steem.config.set('chain_id', config.get('chain_id'));
 
