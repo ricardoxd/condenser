@@ -111,6 +111,7 @@ if (!window.Intl) {
         require('intl/locale-data/jsonp/ru.js');
         require('intl/locale-data/jsonp/fr.js');
         require('intl/locale-data/jsonp/it.js');
+        require('intl/locale-data/jsonp/ko.js');
         Iso.bootstrap(runApp);
     }, "IntlBundle");
 }
