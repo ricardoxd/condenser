@@ -1,13 +1,13 @@
 // sometimes it's impossible to use html tags to style coin name, hence usage of _UPPERCASE modifier
-export const APP_NAME = 'Steemit';
+export const APP_NAME = 'Steem NowOcio';
 // sometimes APP_NAME is written in non-latin characters, but they are needed for technical purposes
 // ie. "Голос" > "Golos"
-export const APP_NAME_LATIN = 'Steemit';
-export const APP_NAME_UPPERCASE = 'STEEMIT';
+export const APP_NAME_LATIN = 'SteemNowOcio';
+export const APP_NAME_UPPERCASE = 'STEEMNOWOCIO';
 export const APP_ICON = 'steem';
 // FIXME figure out best way to do this on both client and server from env
 // vars. client should read $STM_Config, server should read config package.
-export const APP_DOMAIN = 'steemit.com';
+export const APP_DOMAIN = 'steem.nowocio.com';
 export const LIQUID_TOKEN = 'Steem';
 // sometimes it's impossible to use html tags to style coin name, hence usage of _UPPERCASE modifier
 export const LIQUID_TOKEN_UPPERCASE = 'STEEM';
@@ -16,9 +16,9 @@ export const INVEST_TOKEN_UPPERCASE = 'STEEM POWER';
 export const INVEST_TOKEN_SHORT = 'SP';
 export const DEBT_TOKEN = 'STEEM DOLLAR';
 export const DEBT_TOKENS = 'STEEM DOLLARS';
-export const CURRENCY_SIGN = '$';
+export const CURRENCY_SIGN = 'S$';
 export const WIKI_URL = ''; // https://wiki.golos.io/
-export const LANDING_PAGE_URL = 'https://steem.io/';
+export const LANDING_PAGE_URL = 'https://www.nowocio.com/';
 export const TERMS_OF_SERVICE_URL = 'https://' + APP_DOMAIN + '/tos.html';
 export const PRIVACY_POLICY_URL = 'https://' + APP_DOMAIN + '/privacy.html';
 export const WHITEPAPER_URL = 'https://steem.io/SteemWhitePaper.pdf';
@@ -30,22 +30,22 @@ export const DEBT_TICKER = 'SBD';
 export const DEBT_TOKEN_SHORT = 'SBD';
 
 // application settings
-export const DEFAULT_LANGUAGE = 'en'; // used on application internationalization bootstrap
+export const DEFAULT_LANGUAGE = 'es'; // used on application internationalization bootstrap
 export const DEFAULT_CURRENCY = 'USD';
 export const ALLOWED_CURRENCIES = ['USD'];
 export const FRACTION_DIGITS = 2; // default amount of decimal digits
 export const FRACTION_DIGITS_MARKET = 3; // accurate amount of deciaml digits (example: used in market)
 
 // meta info
-export const TWITTER_HANDLE = '@steemit';
+export const TWITTER_HANDLE = '@nowocio';
 export const SHARE_IMAGE =
     'https://' + APP_DOMAIN + '/images/steemit-share.png';
 export const TWITTER_SHARE_IMAGE =
     'https://' + APP_DOMAIN + '/images/steemit-twshare.png';
 export const SITE_DESCRIPTION =
-    'Steemit is a social media platform where everyone gets paid for ' +
-    'creating and curating content. It leverages a robust digital points system, called Steem, that ' +
-    'supports real value for digital rewards through market price discovery and liquidity';
+    'Steem NowOcio es una plataforma de redes sociales donde a todos se les paga ' +
+    'creando y curando contenido. Aprovecha un robusto sistema digital de puntos, llamado Steem, que ' +
+    'respalda el valor real de las recompensas digitales a través del descubrimiento de precios de mercado y la liquidez';
 
 // various
-export const SUPPORT_EMAIL = 'support@' + APP_DOMAIN;
+export const SUPPORT_EMAIL = 'soporte@' + 'nowocio.com';

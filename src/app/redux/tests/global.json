@@ -27,12 +27,12 @@
         "current_reserve_ratio": 1945
     },
     "tag_idx": {
-        "trending": [],
-        "active": [],
-        "recent": [],
-        "best": []
+        "trending": ["spanish"],
+        "active": ["spanish"],
+        "recent": ["spanish"],
+        "best": ["spanish"]
     },
-    "categories": {},
+    "categories": {"spanish"},
     "content": {},
     "accounts": {},
     "pow_queue": [],
@@ -72,11 +72,11 @@
     "discussion_idx": {
         "": {
             "category": "",
-            "trending": [],
-            "recent": [],
-            "active": [],
-            "maturing": [],
-            "best": []
+            "trending": ["spanish"],
+            "recent": ["spanish"],
+            "active": ["spanish"],
+            "maturing": ["spanish"],
+            "best": ["spanish"]
         }
     }
 }
